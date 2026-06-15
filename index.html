@@ -12,37 +12,34 @@ body{
   font-family:Arial;
 }
 
-/* TOP BAR */
 header{
   padding:20px;
   background:#111;
   border-bottom:2px solid red;
 }
+
 header h1{
   margin:0;
 }
 
-/* ROWS */
+/* ROW */
 .row{
-  padding:15px;
+  padding:20px;
 }
 .row h2{
-  margin:10px 0;
-  font-size:18px;
-  color:#ccc;
+  color:#aaa;
 }
 
-/* HORIZONTAL SCROLL */
+/* SCROLL */
 .games{
   display:flex;
   overflow-x:auto;
   gap:12px;
-  padding-bottom:10px;
 }
 
-/* GAME TILE */
+/* TILE */
 .tile{
-  min-width:160px;
+  min-width:170px;
   background:#1a1a1a;
   border-radius:10px;
   overflow:hidden;
@@ -50,16 +47,19 @@ header h1{
   transition:.2s;
   border:2px solid #222;
 }
+
 .tile:hover{
   transform:scale(1.08);
   border-color:red;
   box-shadow:0 0 12px red;
 }
+
 .tile img{
   width:100%;
-  height:100px;
+  height:110px;
   object-fit:cover;
 }
+
 .tile p{
   margin:8px;
   font-size:14px;
@@ -74,10 +74,11 @@ header h1{
   justify-content:center;
   align-items:center;
 }
+
 .panel{
-  width:800px;
+  width:900px;
   max-width:95%;
-  height:500px;
+  height:520px;
   background:#111;
   border:2px solid red;
   border-radius:12px;
@@ -88,14 +89,12 @@ header h1{
 iframe{
   flex:1;
   border:none;
-  background:black;
 }
 
 .controls{
   padding:10px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
 }
 
 button{
@@ -117,12 +116,12 @@ button{
 
 <div id="app"></div>
 
-<!-- LAUNCHER -->
+<!-- POPUP -->
 <div class="launcher" id="launcher">
   <div class="panel">
     <iframe id="frame"></iframe>
     <div class="controls">
-      <span id="title">Game</span>
+      <span id="title"></span>
       <div>
         <button onclick="closeGame()">Back</button>
         <button onclick="openFull()">Fullscreen</button>
@@ -133,42 +132,50 @@ button{
 
 <script>
 
-const DATA_URL = "https://www.onlinegames.io/media/plugins/genGames/embed.json";
-
 let currentUrl = "";
 
-// LOAD GAMES
-fetch(DATA_URL)
-.then(res => res.json())
-.then(data => buildUI(data))
-.catch(err => {
-  document.getElementById("app").innerHTML = "Failed to load games.";
-});
+/* 🎮 FULL STATIC GAME LIST (ADD EVERYTHING HERE) */
+const games = [
+  {
+    title: "Game 1",
+    embed: "https://example.com",
+    img: "https://images.unsplash.com/photo-1520975922284-9b456f9a1d0b?w=800"
+  },
+  {
+    title: "Game 2",
+    embed: "https://example.com",
+    img: "https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800"
+  },
+  {
+    title: "Game 3",
+    embed: "https://example.com",
+    img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800"
+  }
+];
 
-function buildUI(data){
+/* BUILD UI */
+function build(){
 
   const app = document.getElementById("app");
 
-  // We’ll make ONE Xbox-style row first (Featured)
   const row = document.createElement("div");
   row.className = "row";
-
-  row.innerHTML = `<h2>🎮 Featured Games</h2>`;
+  row.innerHTML = "<h2>🎮 Featured Games</h2>";
 
   const container = document.createElement("div");
   container.className = "games";
 
-  data.forEach(game => {
+  games.forEach(g => {
 
     const tile = document.createElement("div");
     tile.className = "tile";
 
     tile.innerHTML = `
-      <img src="${game.thumb || game.image || ""}">
-      <p>${game.title}</p>
+      <img src="${g.img}">
+      <p>${g.title}</p>
     `;
 
-    tile.onclick = () => openGame(game.title, game.embed || game.url);
+    tile.onclick = () => openGame(g.title, g.embed);
 
     container.appendChild(tile);
   });
@@ -177,27 +184,33 @@ function buildUI(data){
   app.appendChild(row);
 }
 
-// OPEN GAME
+/* OPEN */
 function openGame(title,url){
 
-  if(!url) return;
+  if(!url || url === "https://example.com"){
+    alert("No embed added yet.");
+    return;
+  }
 
   currentUrl = url;
 
   document.getElementById("frame").src = url;
   document.getElementById("title").innerText = title;
-
   document.getElementById("launcher").style.display = "flex";
 }
 
+/* CLOSE */
 function closeGame(){
   document.getElementById("launcher").style.display = "none";
   document.getElementById("frame").src = "";
 }
 
+/* FULLSCREEN */
 function openFull(){
   window.open(currentUrl, "_blank");
 }
+
+build();
 
 </script>
 
