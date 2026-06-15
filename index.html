@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Game Site</title>
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+    }
 
+    .game {
+      display: inline-block;
+      margin: 20px;
+      padding: 10px;
+      border: 2px solid red;
+      width: 200px;
+      cursor: pointer;
+    }
+
+    iframe {
+      width: 80%;
+      height: 500px;
+      border: 2px solid red;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🔥 My Horror Game Site 🔥</h1>
+
+  <div class="game" onclick="loadGame()">
+    Click to Play Horror Game
+  </div>
+
+  <div id="player"></div>
+
+  <script>
+    function loadGame() {
+      document.getElementById("player").innerHTML =
+        '<iframe src="https://fnaffree.io"></iframe>';
+    }
+  </script>
+
+</body>
+</html>
