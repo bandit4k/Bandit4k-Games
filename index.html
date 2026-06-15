@@ -2,102 +2,109 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Bandit4K Launcher</title>
+<title>Xbox Game Launcher</title>
 
 <style>
 body{
-    margin:0;
-    background:#0a0a0a;
-    color:white;
-    font-family:Arial;
+  margin:0;
+  background:#0b0b0b;
+  color:white;
+  font-family:Arial;
 }
 
-/* TOP HEADER */
+/* TOP BAR */
 header{
-    text-align:center;
-    padding:30px;
-    background:#111;
-    border-bottom:2px solid red;
+  padding:20px;
+  background:#111;
+  border-bottom:2px solid red;
 }
-
 header h1{
-    margin:0;
-    font-size:32px;
+  margin:0;
 }
 
-header p{
-    color:#aaa;
+/* ROWS */
+.row{
+  padding:15px;
+}
+.row h2{
+  margin:10px 0;
+  font-size:18px;
+  color:#ccc;
 }
 
-/* GAME GRID */
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:20px;
-    padding:20px;
+/* HORIZONTAL SCROLL */
+.games{
+  display:flex;
+  overflow-x:auto;
+  gap:12px;
+  padding-bottom:10px;
 }
 
-/* GAME CARD */
-.card{
-    background:#151515;
-    border:2px solid #222;
-    border-radius:12px;
-    overflow:hidden;
-    cursor:pointer;
-    transition:.2s;
+/* GAME TILE */
+.tile{
+  min-width:160px;
+  background:#1a1a1a;
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.2s;
+  border:2px solid #222;
+}
+.tile:hover{
+  transform:scale(1.08);
+  border-color:red;
+  box-shadow:0 0 12px red;
+}
+.tile img{
+  width:100%;
+  height:100px;
+  object-fit:cover;
+}
+.tile p{
+  margin:8px;
+  font-size:14px;
 }
 
-.card:hover{
-    transform:translateY(-6px);
-    border-color:red;
-    box-shadow:0 0 15px red;
+/* LAUNCHER */
+.launcher{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.92);
+  display:none;
+  justify-content:center;
+  align-items:center;
 }
-
-.card img{
-    width:100%;
-    height:160px;
-    object-fit:cover;
-}
-
-.card h3{
-    text-align:center;
-    padding:10px;
-}
-
-/* POPUP LAUNCHER */
-.popup{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.9);
-    display:none;
-    justify-content:center;
-    align-items:center;
-}
-
 .panel{
-    background:#111;
-    border:2px solid red;
-    padding:25px;
-    width:400px;
-    max-width:90%;
-    text-align:center;
-    border-radius:12px;
+  width:800px;
+  max-width:95%;
+  height:500px;
+  background:#111;
+  border:2px solid red;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
 }
 
-.btn{
-    display:inline-block;
-    padding:10px 20px;
-    margin-top:15px;
-    background:red;
-    color:white;
-    text-decoration:none;
-    border-radius:8px;
+iframe{
+  flex:1;
+  border:none;
+  background:black;
 }
 
-.close{
-    margin-top:10px;
-    cursor:pointer;
-    color:#aaa;
+.controls{
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+button{
+  background:red;
+  border:none;
+  padding:8px 12px;
+  color:white;
+  cursor:pointer;
+  border-radius:6px;
 }
 </style>
 </head>
@@ -105,61 +112,93 @@ header p{
 <body>
 
 <header>
-<h1>🎮 Bandit4K Games</h1>
-<p>Click a game to launch</p>
+<h1>🎮 Xbox Game Launcher</h1>
 </header>
 
-<div class="grid">
+<div id="app"></div>
 
-<!-- GAME 1 -->
-<div class="card" onclick="openGame('FNAF 1','https://example.com')">
-<img src="https://images.unsplash.com/photo-1520975922284-9b456f9a1d0b?w=800">
-<h3>FNAF 1</h3>
-</div>
-
-<!-- GAME 2 -->
-<div class="card" onclick="openGame('FNAF 2','https://example.com')">
-<img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800">
-<h3>FNAF 2</h3>
-</div>
-
-<!-- GAME 3 -->
-<div class="card" onclick="openGame('FNAF 3','https://example.com')">
-<img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800">
-<h3>FNAF 3</h3>
-</div>
-
-<!-- GAME 4 -->
-<div class="card" onclick="openGame('FNAF 4','https://example.com')">
-<img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800">
-<h3>FNAF 4</h3>
-</div>
-
-</div>
-
-<!-- POPUP -->
-<div class="popup" id="popup">
-
-<div class="panel">
-<h2 id="title"></h2>
-
-<a id="play" class="btn" target="_blank">Play Game</a>
-
-<div class="close" onclick="closeGame()">Close</div>
-</div>
-
+<!-- LAUNCHER -->
+<div class="launcher" id="launcher">
+  <div class="panel">
+    <iframe id="frame"></iframe>
+    <div class="controls">
+      <span id="title">Game</span>
+      <div>
+        <button onclick="closeGame()">Back</button>
+        <button onclick="openFull()">Fullscreen</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-function openGame(name,url){
-    document.getElementById("title").innerText = name;
-    document.getElementById("play").href = url;
-    document.getElementById("popup").style.display = "flex";
+
+const DATA_URL = "https://www.onlinegames.io/media/plugins/genGames/embed.json";
+
+let currentUrl = "";
+
+// LOAD GAMES
+fetch(DATA_URL)
+.then(res => res.json())
+.then(data => buildUI(data))
+.catch(err => {
+  document.getElementById("app").innerHTML = "Failed to load games.";
+});
+
+function buildUI(data){
+
+  const app = document.getElementById("app");
+
+  // We’ll make ONE Xbox-style row first (Featured)
+  const row = document.createElement("div");
+  row.className = "row";
+
+  row.innerHTML = `<h2>🎮 Featured Games</h2>`;
+
+  const container = document.createElement("div");
+  container.className = "games";
+
+  data.forEach(game => {
+
+    const tile = document.createElement("div");
+    tile.className = "tile";
+
+    tile.innerHTML = `
+      <img src="${game.thumb || game.image || ""}">
+      <p>${game.title}</p>
+    `;
+
+    tile.onclick = () => openGame(game.title, game.embed || game.url);
+
+    container.appendChild(tile);
+  });
+
+  row.appendChild(container);
+  app.appendChild(row);
+}
+
+// OPEN GAME
+function openGame(title,url){
+
+  if(!url) return;
+
+  currentUrl = url;
+
+  document.getElementById("frame").src = url;
+  document.getElementById("title").innerText = title;
+
+  document.getElementById("launcher").style.display = "flex";
 }
 
 function closeGame(){
-    document.getElementById("popup").style.display = "none";
+  document.getElementById("launcher").style.display = "none";
+  document.getElementById("frame").src = "";
 }
+
+function openFull(){
+  window.open(currentUrl, "_blank");
+}
+
 </script>
 
 </body>
